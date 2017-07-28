@@ -1,34 +1,6 @@
 ﻿<?php
 class Cola_Helper_Img {
 
-    public static function upload($file) {
-        if ( file_exists($file) ) {
-            $url = 'http://upload2.lelecdn.com:8000/single_upload_tool.php';
-            $ch = curl_init($url);
-            $postdata['channel'] = 'user';
-            $postdata['username'] = 'lc_usercenter';
-            $postdata['md5str'] = '78df85bf9f508be322d6de751a6c5b65';
-            $postdata['single_upload_submit'] = 'ok';
-            $postdata['type'] = 'mimetype';
-            $postdata['compress'] = 0;
-            $postdata['single_upload_file'] = '@' . $file;
-            
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array (
-                    'Expect: ' 
-            ));
-            $result = curl_exec($ch);
-            curl_close($ch);
-            return json_decode($result, true);
-        } else {
-            throw new Exception('参数错误');
-        }
-    }
-
     public static function resizeImage($image, $width, $height, $scale, $SetW, $SetH) {
         $imginfo = getimagesize($image);
         if ( ! $imginfo )

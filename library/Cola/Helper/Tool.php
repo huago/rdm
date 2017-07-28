@@ -389,58 +389,6 @@ class Cola_Helper_Tool {
         return $terminal;
     }
 
-    //判断终端类型,电脑访问M站，如果是访问播放页就直接跳到主站播放页，如果是其它页就跳主站首页
-    //$pc_url 2014-3-11 新增,请用绝对路径
-    //如果有$pc_url,则跳转到$pc_url
-    public static function MForwardMaster($pc_url = '') {
-        $userAgent = self::getTerminal();
-
-        if ($userAgent == 'pc' || $userAgent == 'pad') {
-
-            if ($pc_url != '') {//如果指定了 pc_url 直接跳转
-                header("Location: " . $pc_url);
-                exit;
-            }
-            //未指定 根据匹配规则跳转
-            $url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-            $cls_syslog = new Cola_Com_Syslogng();
-            $cls_syslog->property['message'] = 'UA:' . $userAgent . '  DETAIL:' . (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
-            $cls_syslog->log('msite', 'forward_log');
-
-            //跳转地址，默认主站首页
-            $forward = 'http://www.letv.com';
-
-            if (($pos = strpos($url, 'vplay')) !== false) {
-                //播放页跳转
-                $vid = substr($url, $pos + 6, intval(strrpos($url, '.')) - ($pos + 6));
-                $forward = "http://www.letv.com/ptv/vplay/{$vid}.html";
-            } elseif (false !== strpos($url, 'wsgs')) {    //我是歌手跳转
-                //规则
-                $urlConfig = array(
-                    'review' => 'zq',
-                    'highlight' => 'kd',
-                    'report' => 'bd',
-                    'dujia' => 'ch',
-                    'star' => 'star',
-                    'wakgs' => 'wakgs',
-                    'wsgm' => 'wsgm',
-                    '1season' => 'hg',
-                );
-
-                $forward = 'http://zongyi.letv.com/wsgs2/';
-                foreach ($urlConfig as $msiteChannel => $pcChannel) {
-                    if (false !== strpos($url, $msiteChannel)) {
-                        $forward .= $pcChannel . '/';
-                        break;
-                    }
-                }
-            }
-
-            header("Location:$forward");
-            exit;
-        }
-    }
-
     /*
      * 解析ini文件
      * ini文件格式为
@@ -483,24 +431,6 @@ class Cola_Helper_Tool {
         }
 
         return $iniInfo;
-    }
-
-    /**
-     * 通过视频链接提取VID，目前只支持vplay链接。 如：http://www.letv.com/ptv/vplay/2031640.html
-     * @param string $url
-     */
-    public static function getVidByUrl($url) {
-        if (empty($url))
-            return false;
-
-        $vid = 0;
-        if (($pos = strpos($url, 'vplay')) !== false) {
-            $pathInfo = pathinfo($url);
-            $baseName = $pathInfo['basename'];
-            $tempAry = explode('.', $baseName);
-            $vid = $tempAry[0];
-        }
-        return $vid;
     }
 
 }
