@@ -1,0 +1,12 @@
+body{background-color: #ccc;}
+.main-content{margin: auto; margin-top:70px; width: 400px; height: 400px; background-color: #fff;border-radius: 3px;}
+.login-text{padding-top:80px;font-size: 18px;text-align: center;}
+.login-text a{padding: 10px;text-decoration: none;}
+.active{font-weight:700;color: #ea6f5a; border-bottom: 2px solid #ea6f5a;}
+.no-active{color: #969696;}
+.username-input{margin-top: 60px;text-align: center;}
+.commit-input{margin-top: 30px;text-align: center;}
+.password-input{text-align: center;}
+.username-content{width:240px;height:36px; border:1px solid #c8c8c8;border-radius: 2px 2px 0 0;border-bottom: none;padding-left: 10px;}
+.password-content{width:240px;height:36px; border:1px solid #c8c8c8;border-radius: 0 0 2px 2px;padding-left: 10px;}
+.login-commit{width: 100px;height: 30px;background-color: #3194d0;border:0px; border-radius: 3px;color: #fff;}

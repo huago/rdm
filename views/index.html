@@ -1,0 +1,132 @@
+<html>
+<head>
+	<title>OpenRDM</title>
+	<link rel="stylesheet" type="text/css" href="/static/css/index.css">
+</head>
+<body>
+	<div class="all-content">
+		<div class ="left-menu"> 
+			<input type="button"  class="new-link-btn" id="new-link-btn" value="新建连接">
+			<input type="button"  class="quit-btn" id="quit-btn" value="退出">
+			<hr class="hr-line">
+			<?php 
+				if (isset($this->allmenu) && !empty($this->allmenu)) {
+					foreach($this->allmenu as $menu) { ?>
+						<ul data-num="<?php echo $menu['id']; ?>" id="menu-ul-<?php echo $menu['id']; ?>">
+							<a href="/connection/index?id=<?php echo $menu['id']; ?>"><b><?php echo $menu['title']; ?></b></a>
+						</ul>
+			<?php	}
+				}
+			 ?>
+		</div>
+		<div class="right-content">
+			<?php if ($this->iskey) { ?>
+				<div class="key-type"><b>KEY</b>：<input class="top-key-type" type="text" value="<?php echo $this->key; ?>" disabled>&nbsp;<b>TYPE</b>：<input class="top-key-type" type="text" value="<?php echo $this->key_type;?>" disabled><b>TTL</b>：<input class="top-key-type" type="text" value="<?php echo $this->ttl; ?>" disabled><button class="delete-key-btn" id="delete-key-btn" data-key="<?php echo $this->key; ?>">删除</button></div>
+				<table class="table-content">
+					<?php 
+						switch($this->key_type_num) {
+							case 1:
+								echo "<tr><td class='td-have-top td-bold td-center'>VALUE</td></tr>";
+								echo "<tr><td>&nbsp;</td></tr>";
+								echo "<tr><td>{$this->value}</td></tr>";
+								break;
+							case 2:
+							case 3:
+								echo "<tr><td class='td-have-top td-bold td-center'>VALUE</td></tr>";
+								echo "<tr><td>&nbsp;</td></tr>";
+								foreach ($this->value as $v) {
+									echo "<tr><td class=''>{$v}</td></tr>";
+								}
+								break;
+							case 4:
+								echo "<tr><td class='td-have-top td-no-right td-bold td-center'>MEMBER</td><td class='td-have-top td-bold td-center'>SCORE</td></tr>";
+								echo "<tr><td class='td-no-right'>&nbsp;</td><td class='td-no-left'>&nbsp;</td></tr>";
+								foreach($this->value as $k => $v) {
+									echo "<tr><td class='td-no-right'>{$k}</td><td>{$v}</td></tr>";
+								}
+								break;
+							case 5:
+								echo "<tr><td class='td-have-top td-no-right td-bold td-center'>FIELD</td><td class='td-have-top td-bold td-center'>VALUE</td></tr>";
+								echo "<tr><td class='td-no-right'>&nbsp;</td><td class='td-no-left'>&nbsp;</td></tr>";
+								foreach($this->value as $k => $v) {
+									echo "<tr><td class='td-no-right'>{$k}</td><td>{$v}</td></tr>";
+								}
+								break;
+							default:
+								$value = '';
+								break;
+						}
+					 ?>
+				</table>
+			<?php } ?>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+	ACTIVE_ID = '<?php echo $this->active_id; ?>';
+	ACTIVE_DB = '<?php echo $this->active_db; ?>';
+	IS_KEY = '<?php echo $this->iskey; ?>';
+	KEY = '<?php echo $this->key; ?>';
+
+	if (ACTIVE_ID) {
+		appendHtml = '';
+		for(i=0; i<16; i++) {
+			appendHtml += '<li id=db_' + i + '><a href="/db/index?id=' + ACTIVE_ID + '&db=' + i + '">db' + i + '</a></li>';;
+		}
+		$('#menu-ul-' + ACTIVE_ID).append(appendHtml);
+	}
+
+	if (ACTIVE_DB) {
+		<?php 
+			$appendDbHtml = '';
+			$active_id = $this->active_id;
+			$active_db = $this->active_db;
+
+			if (isset($this->keys)) {
+				foreach($this->keys as $key) {
+					$appendDbHtml .= "<ul id='key_{$key}'><a href='/key/index?id={$active_id}&db={$active_db}&key={$key}'>{$key}</a></ul>";
+				}
+			}
+
+		 ?>
+
+		 $('#db_' + ACTIVE_DB).css('background-image','url(/static/images/blueicon.png)');
+		 $('#db_' + ACTIVE_DB).append("<?php echo $appendDbHtml; ?>");
+	}
+
+	if (IS_KEY) {
+		$('#key_' + KEY).css('background-image','url(/static/images/curtable.png)');
+	}
+
+	$(document).ready(function(){
+		$('#delete-key-btn').click(function(){
+			delete_key = $(this).attr('data-key');
+			$.get('/api/deletekey/', {id:ACTIVE_ID,db:ACTIVE_DB,key:delete_key}, function(data){
+				data = JSON.parse(data);
+
+				if (data.code != 200) {
+					alert(data.message);
+				} else {
+					 $(location).attr('href', '/db/index?id=' + ACTIVE_ID + '&db=' + ACTIVE_DB);
+				}
+			});
+		});
+
+		$('#quit-btn').click(function(){
+			$.get('/api/quit/',{},function(data){
+				data = JSON.parse(data);
+
+				if (data.code != 200) {
+					alert(data.message);
+				} else {
+					$(location).attr('href', '/index/login');
+				}
+			})
+		});
+		$('#new-link-btn').click(function(){
+			
+		});
+	});
+</script>
+</html>

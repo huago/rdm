@@ -1,0 +1,50 @@
+<html>
+<head>
+  <title>登录</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/login.css">
+</head>
+<body>
+<div class="main-content">
+  <div class="login-text"><a class="active" href="/index/login">登录</a> · <a class="no-active" href="/index/reg">注册</a></div>
+  <div class="username-input">
+    <input class="username-content" type="text" name="username" id="username" value="" placeholder="邮箱地址">
+  </div>
+  <div class="password-input">
+    <input class="password-content" type="password" name="password" id="password" value="" placeholder="邮箱密码">
+  </div>
+  <div class="commit-input">
+    <input class="login-commit" type="submit" name="commit" id="commit" value="登录">
+  </div>
+</div>
+</body>
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#commit').click(function(){
+      username = $('#username').val();
+
+      if (username == '') {
+        showNotice('请输入账号');
+        return;
+      }
+
+      password = $('#password').val();
+
+      if (password == '') {
+        showNotice('请输入密码');
+        return;
+      }
+
+      $.post('/api/login', {username:username, password:password}, function(data){
+        data = JSON.parse(data);
+
+        if (data.code != 200) {
+          alert(data.message);
+        } else {
+          $(location).attr('href', '/');
+        }
+      });
+    });
+  });
+</script>
+</html>
