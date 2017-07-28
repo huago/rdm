@@ -2,7 +2,7 @@
 /**
  * syslog-ng日志类 
  *
- * @author         guanbaolong <guanbaolong@letv.com>
+ * @author         guanbaolong
  * @version        1.0
  * @example 
          //使用方法：
@@ -87,8 +87,8 @@ class Common_SyslogNg
         $msg = $this->_build_string($data);
         $msg = '<182>' . $product . '[' . getmypid() . ']:' . $msg; // 22*8+6, 22=local6, 6=info
         if ($socket == false) {
-            if (is_dir("/letv/logs")) {
-                file_put_contents("/letv/logs/phpmessages", $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
+            if (is_dir("/var/logs")) {
+                file_put_contents("/var/logs/phpmessages", $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
             }else if (is_dir("/stor/logs")) {
                 file_put_contents("/stor/logs/phpmessages", $msg . PHP_EOL, FILE_APPEND | LOCK_EX);
             }

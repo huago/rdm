@@ -1,6 +1,6 @@
 <?php
 class Common_Rabbitmq {
-	protected $_config = array('host'=>'115.182.93.120' , 'port'=>'5672', 'login'=>'letv', 'password'=>'LeTV@9IoRuVfDdWdrX' , 'vhost' =>'/');
+	protected $_config = array('host'=>'' , 'port'=>'', 'login'=>'', 'password'=>'' , 'vhost' =>'/');
 	protected $_connection;
 	protected $_channel;
 	protected static $_exchange = array();

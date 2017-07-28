@@ -21,10 +21,9 @@ define('TIME_FORMAT_EVENT_WITHYEAR', "%s年%s月%s日 周%s %s");
  *
  * @example Cola_Helper_Tool::Curl
  *
- * @author guanbaolong@letv.com
+ * @author guanbaolong
  * @version V2.0 2013-5-28
- * @copyright letv.com
- * @link www.letv.com
+ * @copyright 
  *
  */
 class Cola_Helper_Tool {
@@ -63,29 +62,6 @@ class Cola_Helper_Tool {
             return "{$m}月前";
         }
         return date('Y-m-d', $timeLast);
-    }
-
-    public static function getSeoUrl($type, $id = '', $real = false) {
-        $url = 'http://dev.m.letv.com/';
-
-        switch ($type) {
-            case 'vlist'://列表页
-                $patternSeo = 'vplay_{id}.html';
-                $patternReal = 'play/vplay?id={id}';
-
-                break;
-            case 'vplay': //播放页
-                $patternSeo = 'vplay_{id}.html';
-                $patternReal = 'play/vplay?id={id}';
-                if ($id)
-                    $url .= $real ? $patternReal : $patternSeo;
-                $url = str_replace('{id}', $id, $url);
-                break;
-            default:
-                break;
-        }
-
-        return $url;
     }
 
     /**

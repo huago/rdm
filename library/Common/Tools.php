@@ -19,8 +19,7 @@ define('TIME_FORMAT_EVENT_WITHYEAR', "%s年%s月%s日 周%s %s");
  * 
  * 工具类（提供通用方法）
  * @author  other && gaojun
- * @copyright 2012 letv.com
- * @link www.letv.com
+ * @copyright 2012 
  * @version 1.0  date:2012-05-05
  */
 class Common_Tools {
@@ -112,40 +111,6 @@ class Common_Tools {
 		return $htmlspecialchars ? htmlspecialchars ( trim ( strip_tags ( $textString ) ) ) : trim ( strip_tags ( $textString ) );
 	}
 	
-	public static function msgRedirect($msg, $url = '', $seconds = 4) {
-		if (! $url)
-			$url = (isset ( $_SERVER ['HTTP_REFERER'] ) && $_SERVER ['HTTP_REFERER']) ? $_SERVER ['HTTP_REFERER'] : 'http://www.letv.com/';
-		$time = $seconds * 1000;
-		$charset = defined ( 'HTML_CHARSET' ) ? HTML_CHARSET : 'UTF-8';
-		$html = <<<html
-				<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-				<html xmlns="http://www.w3.org/1999/xhtml">
-				<head>
-				<meta http-equiv="Content-Type" content="text/html; charset={$charset}" />
-				<title>乐视提示您</title>
-				<style type="text/css"><!--body{text-align:center; font-family: Arial, Helvetica, sans-serif; font-size:14px; padding-top:100px;}a,a:visited {color:\#0068b7;text-decoration:underline;}a:hover { color:\#0068b7;text-decoration:none;}div {width:334px; height:95px; padding-top:15px; background:url(http:\/\/i3.letvimg.com/img/201203/02/tishibg.png) no-repeat; padding-left:230px; margin:0 auto;}div ul { margin:0px; padding:0px; list-style:none; text-align:left; line-height:25px;}h1{ font-size:14px;margin:0px; padding:0px; color:\#eb610f;
-		        }-->
-				</style>
-				</head>
-				<body>
-				<div>
-				<ul>
-				<li><h1>乐视提示您：</h1></li>
-				<li>{$msg}</li>
-				<li>如果您的浏览器没有自动跳转，请点<a href='javascript:location.href="{$url}"'>这里</a></li>
-				</ul>
-				</div>
-				<script type="text/javascript">
-				setTimeout('location.href="{$url}"',$time)
-				</script>
-				</body>
-				</html>
-html;
-		self::outputExpireHeader ( - 86400 );
-		echo $html;
-		exit ();
-	}
-	
 	//CURL请求
 	public static function curl($destURL, $paramStr = '', $flag = 'get') {
 		if (! extension_loaded ( 'curl' ))
@@ -167,46 +132,6 @@ html;
 	//生成一个17字节长唯一随机文件名
 	public static function getRandNumber() {
 		return chr ( mt_rand ( 97, 122 ) ) . mt_rand ( 10000, 99999 ) . time ();
-	}
-	
-	/**
-	 * 
-	 * 发送邮件
-	 * @param str $email
-	 * @param str $msg 
-	 * @return bool
-	 */
-	public static function sendMail($email, $mailTitle, $mailContent, $from = 'letv@letv-info.com', $fromName = '乐视网') {
-		require_once PLUGIN_PATH . "phpmailer.php";
-		$mail = new phpmailer ( true ); //New instance, with exceptions enabled
-		
-
-		$mailContent = eregi_replace ( "[\]", '', $mailContent );
-		try {
-			$mail->IsSMTP (); // tell the class to use SMTP
-			$mail->CharSet = "UTF-8";
-			$mail->SMTPAuth = true; // enable SMTP authentication
-			//$mail->SMTPDebug  = 2;                     // enables SMTP debug information (for testing)
-			$mail->Port = 25; // set the SMTP server port
-			$mail->Host = "115.182.51.128"; // SMTP server mail.letv-info.com
-			$mail->Username = "letv@letv-info.com"; // SMTP server username
-			$mail->Password = "letv"; // SMTP server password
-			$mail->From = $from;
-			$mail->FromName = $fromName;
-			$mail->AddAddress ( $email );
-			$mail->Subject = $mailTitle;
-			//$mail->AltBody    = $mailContent; // optional, comment out and test
-			//$mail->WordWrap   = 80; // set word wrap
-			$mail->MsgHTML ( $mailContent );
-			//$mail->AddAttachment("images/phpmailer.gif");      //附件
-			//$mail->IsSendmail(); 
-			$mail->IsHTML ( true ); // send as HTML			
-			$mail->Send ();
-			return 1;
-		} catch ( phpmailerException $e ) {
-			//echo $e->errorMessage();
-			return 0;
-		}
 	}
 	
 	/**
@@ -385,58 +310,6 @@ html;
 	}
 	
 	/**
-	 * 图片上传类
-	 * state：1（上传成功）
-	 *state：2（上传重复）
-	 *state：3（上传文件格式不符合上传条件，拒上传）
-	 *state：4（身份验证失败）
-	 *state：5（上传文件大小不在允许上传范围之内）
-	 *state：6（上传文件名含中文或者空格）
-	 *state：7（文件上传失败）
-	 *@param string $tmpfilename 服务器临时文件
-	 *@param string $local_name 本地上传的文件名
-	 */
-	public static function uploadFile($tmpfilename, $local_name='') {
-		if (file_exists ( $tmpfilename )) {
-		        //扩展名
-		        $ext_name = '.jpg';
-		        if($local_name){
-		              $tmp = explode('.', $local_name);
-		              if(!empty($tmp[1]))
-		                      $ext_name = '.'.$tmp[1];  
-		        }
-			$uploadfile = '/letv/data/upload/' . date ( 'ymdhis' ) . $ext_name;
-			$url = 'http://upload.letvcdn.com:8000/single_upload_tool.php';
-			if (move_uploaded_file ( $tmpfilename, $uploadfile )) {
-				;
-			} else {
-				die ( 'Possible file upload attack!\n' );
-			}
-			$ch = curl_init ( $url );
-			$postdata ['channel'] = 'user';
-			$postdata ['username'] = 'lianshengdong';
-			$postdata ['md5str'] = '6a7cbc3d823387112fcb6daf7104cc98';
-			$postdata ['single_upload_submit'] = 'ok';
-			$postdata ['type'] = 'mimetype';
-			$postdata ['compress'] = 85; //图片压缩
-			$postdata ['single_upload_file'] = '@' . $uploadfile; //文件名前必须加@
-			
-
-			curl_setopt ( $ch, CURLOPT_POST, true );
-			curl_setopt ( $ch, CURLOPT_HEADER, false );
-			curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt ( $ch, CURLOPT_TIMEOUT, 240 );
-			curl_setopt ( $ch, CURLOPT_POSTFIELDS, $postdata );
-			curl_setopt ( $ch, CURLOPT_HTTPHEADER, array ('Expect: ' ) );
-			$result = curl_exec ( $ch );
-			curl_close ( $ch );
-			return json_decode ( $result );
-		} else {
-			die ( "File not exists!\n" );
-		}
-	}
-	
-	/**
 	 * 
 	 * 写日志文件
 	 * @param string $filename 日志文件名
@@ -448,65 +321,6 @@ html;
 		$fp = fopen ( $path . $filename . '.log', 'a+' );
 		fwrite ( $fp, "[" . date ( "Ymd H:i:s" ) . "] " . preg_replace ( '/[\r\n]/', '', $loginfo ) . "\r\n" );
 		fclose ( $fp );
-	}
-	/**
-	 * 通过sso.letv.com登录
-	 * @param array $info['username'],$info['ssouid']; passportuid
-	 * session 是序列化数组值，后续数据本地化
-	 */
-	public static function isLogin() {
-		session_start ();
-		$info = array ();
-		$sso_tk = isset ( $_COOKIE ['sso_tk'] ) ? $_COOKIE ['sso_tk'] : ''; //获取cookie中sso_tk的值
-		if (! empty ( $sso_tk )) {
-			//以cookie中sso_tk的值为session的key是否存在
-			if (isset ( $_SESSION [$sso_tk] )) {
-				return $_SESSION[$sso_tk]; //存在直接返回，不用走接口验证,起到优化作用
-			} else {
-				//不存在，走接口验证并写入session
-				$sso_tkInfo = self::requestUrl ( "http://api.sso.letv.com/api/checkTicket/tk/{$sso_tk}?all" );
-				$sso_tkInfo = json_decode ( $sso_tkInfo, true );
-				if ($sso_tkInfo['status'] == '1' && isset($sso_tkInfo ['bean']['ssouid'],$sso_tkInfo ['bean']['username'])){
-					$info ['ssouid']   = $sso_tkInfo ['bean']['ssouid']; //验证成功返回用户ID
-					$info ['username'] = $sso_tkInfo ['bean']['username']; //验证成功返回用户名
-					$_SESSION [$sso_tk] = $info; //存入session
-					return $info; //已登录
-				} else {
-					return $info; //未登录
-				}
-			}
-		} else { //cookie中sso_tk不存在
-			setcookie("u", '',-86400 * 365,"/",".letv.com");
-			setcookie("ui", '',-86400 * 365,"/",".letv.com");
-			setcookie("sso_tk", '',-86400 * 365,"/",".letv.com");
-			return $info; //未登录
-		}
-	}
-	/**
-	 * 根据paassportID获取用户信息
-	 */
-	public static function getUserInfoByUid($uid) {
-		$userInfo = array ();
-		$url = "http://api.sso.letv.com/api/getUserByID/uid/{$uid}";
-		$userInfo = json_decode ( self::requestUrl ( $url ), true );
-		if ($userInfo ['status'] == '1' && isset ( $userInfo ['bean'] ) && ! empty ( $userInfo ['bean'] )) {
-			return $userInfo ['bean'];
-		} else {
-			return array ();
-		}
-	}
-	/**
-	 * 根据用户名获取用户信息
-	 */
-	public static function getUserInfoByUsername($username) {
-		$userInfo = array ();
-		$url = "http://api.sso.letv.com/api/getUserByName/username/" . $username;
-		$userInfo = json_decode ( self::requestUrl ( $url ), true );
-		if ($userInfo ['status'] == '1' && isset ( $userInfo ['bean'] ) && ! empty ( $userInfo ['bean'] )) {
-			return $userInfo ['bean'];
-		} else {
-			return array ();
-		}
 	}
 	
 	/*

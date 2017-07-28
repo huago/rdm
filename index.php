@@ -1,7 +1,7 @@
 <?php
 /**
  * 主目录启动文件，配置调试信息，加载类库，加载代码库版本信息等准备数据
- * @author xuhonglei@letv.com
+ * @author cup_chenyubo
  * @version 2013-10-15
  */
 header("Content-type: text/html; charset=utf-8");
