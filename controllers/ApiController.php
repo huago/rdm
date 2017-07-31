@@ -51,7 +51,7 @@ class ApiController extends Cola_Controller
 			$this->output($code = 200, $data = array(), $message = '');
 		}
 
-		$this->output($code = 0, $data = array(), $message = '用户不存在');
+		$this->output($code = 0, $data = array(), $message = '用户不存在或密码错误');
 	}
 
 	public function regAction()
