@@ -62,7 +62,11 @@
 		</div>
 	</div>
 	<div class="new-link-form">
-		
+		<div class="new-link-input">名称:<input class="new-link-form-input" type="text" name="title" id="title" value="" placeholder="非必填"></div>
+		<div class="new-link-input">主机:<input class="new-link-form-input" type="text" name="host" id="host" value="" placeholder="必填"></div>
+		<div class="new-link-input">端口:<input class="new-link-form-input" type="text" name="port" id="port" value="" placeholder="必填"></div>
+		<div class="new-link-input">密码:<input class="new-link-form-input" type="text" name="auth" id="auth" value="" placeholder="非必填"></div>
+		<div><button class="new-link-btn new-link-btn-form" id="commit-link-btn">创建</button><button class="cancel-link-btn" id="cancel-link-btn">取消</button></div>
 	</div>
 </body>
 <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
@@ -127,8 +131,46 @@
 				}
 			})
 		});
+
+		$('#commit-link-btn').click(function(){
+			title = $('#title').val();
+			host = $('#host').val();
+			port = $('#port').val();
+			auth = $('#auth').val();
+
+			if (title == '') {
+				alert('名称不能为空');
+				return;
+			}
+
+			if (host == '') {
+				alert('主机不能为空');
+				return;
+			}
+
+			if (port == '') {
+				alert('端口不能为空');
+				return;
+			}
+
+			$.post('/api/addconnection', {title:title, host:host, port:port, auth:auth}, function(data) {
+				data = JSON.parse(data);
+				if (data.code != 200) {
+					alert('添加失败');
+				} else {
+					$('.new-link-form').css('display', 'none');
+					$(location).attr('href', '/');
+				}
+			});
+		});
+
+		$('#cancel-link-btn').click(function(){
+			$('.new-link-form').css('display', 'none');
+		});
+
+
 		$('#new-link-btn').click(function(){
-			
+			$('.new-link-form').css('display', 'block');
 		});
 	});
 </script>

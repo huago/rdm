@@ -6,6 +6,34 @@ class ApiController extends Cola_Controller
 		parent::__construct();
 	}
 
+	public function addconnectionAction()
+	{
+		$title = isset($_POST['title']) ? $_POST['title'] : '';
+		$host = isset($_POST['host']) ? $_POST['host'] : '';
+		$port = isset($_POST['port']) ? $_POST['port'] : '';
+		$auth = isset($_POST['auth']) ? $_POST['auth'] : '';
+
+		if (!$title) {
+			$this->output($code = 0, $data = array(), $message = '名称不能为空');
+		}
+
+		if (!$host) {
+			$this->output($code = 0, $data = array(), $message = '主机不能为空');
+		}
+
+		if (!$port) {
+			$this->output($code = 0, $data = array(), $message = '端口不能为空');
+		}
+
+		$connectionId = $this->model('connection')->add($title, $host, $port, $auth);
+
+		if (!$connectionId) {
+			$this->output($code = 0, $data = array(), $message = '添加失败');
+		}
+
+		$this->output($code = 200, $data = array(), $message = '');
+	}
+
 	public function loginAction()
 	{
 		$username = $_POST['username'];
